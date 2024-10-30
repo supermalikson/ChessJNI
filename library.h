@@ -3,13 +3,6 @@
 #include <array>
 #include <vector>
 
-extern "C" {
-
-    void setBoard();
-    void setFigure(int x, int y, int figure);
-    int getFigure(int x, int y);
-    int getTeam(int x, int y);
-}
 
 void cleanMovements(auto& array);
 

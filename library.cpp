@@ -1,5 +1,6 @@
 #include "library.h"
 #include "Board.h"
+#include "Turn.h"
 
 #include <iostream>
 
@@ -92,20 +93,21 @@ JNIEXPORT void JNICALL Java_Board_myMousePressed
   (JNIEnv *env, jobject jobj, jint i, jint j) {
 
   if (board[i][j] == 0 || enemy(i, j)) {
-    if (validMove(i, j))
+    if (validMove(i, j)) {
+
       move(selectedRow, selectedCol, i, j);
+    }
     selectedRow = -1;
     selectedCol = -1;
     selectedFigure = 0;
     cleanMovements(possibleMovements);
 
   } else {
-
-    cleanMovements(possibleMovements);
-    selectedRow = i;
-    selectedCol = j;
-    selectedFigure = board[i][j];
-    calculateMovements(i, j);
+      cleanMovements(possibleMovements);
+      selectedRow = i;
+      selectedCol = j;
+      selectedFigure = board[i][j];
+      calculateMovements(i, j);
   }
 }
 
@@ -117,31 +119,190 @@ void cleanMovements(auto& array) {
 bool enemy(int row, int col) {
   if (selectedFigure > 0)
     return board[row][col] < 0;
+  if (selectedFigure < 0)
+    return board[row][col] > 0;
   return false;
 }
 
 void calculateMovements(int i, int j) {
   int figure = board[i][j];
   switch (figure) {
-    case 1:
+
+    //Black Pawn
+    case 1: {
       if (enemy(i+1, j-1)) possibleMovements[i+1][j-1] = 1;
       if (enemy(i+1, j+1)) possibleMovements[i+1][j+1] = 1;
       if (!enemy(i+1, j)) possibleMovements[i+1][j] = 1;
-      if (i == 1) possibleMovements[i+2][j] = 1;
-    break;
+      if (i == 1 && board[i + 2][j] == 0 && board[i + 1][j] == 0) possibleMovements[i+2][j] = 1;
+      break;
+    }
 
-    case -1: // White Pawn
+    //White Pawn
+    case -1: {
       if (i > 0) {
         if (enemy(i - 1, j - 1)) possibleMovements[i - 1][j - 1] = 1;
         if (enemy(i - 1, j + 1)) possibleMovements[i - 1][j + 1] = 1;
         if (board[i - 1][j] == 0) possibleMovements[i - 1][j] = 1;
         if (i == 6 && board[i - 2][j] == 0 && board[i - 1][j] == 0) possibleMovements[i - 2][j] = 1;
       }
-    break;
+      break;
+    }
 
-    
+    //Rook
+    case 2: case -2: {
+      for (int x = i + 1; x < 8; x++) {
+        if (board[x][j] == 0) possibleMovements[x][j] = 1;
+        else {
+          if (enemy(x, j)) possibleMovements[x][j] = 1;
+          break;
+        }
+      }
+      for (int x = i - 1; x >= 0; x--) {
+        if (board[x][j] == 0) possibleMovements[x][j] = 1;
+        else {
+          if (enemy(x, j)) possibleMovements[x][j] = 1;
+          break;
+        }
+      }
+      for (int y = j + 1; y < 8; y++) {
+        if (board[i][y] == 0) possibleMovements[i][y] = 1;
+        else {
+          if (enemy(i, y)) possibleMovements[i][y] = 1;
+          break;
+        }
+      }
+      for (int y = j - 1; y >= 0; y--) {
+        if (board[i][y] == 0) possibleMovements[i][y]=1;
+        else {
+          if (enemy(i, y)) possibleMovements[i][y]=1;
+          break;
+        }
+      }
+      break;
+    }
 
+    //Knight
+    case 3: case -3: {
+      int moves[8][2] = {
+        {2,1},{1,2},{-2,1},{-1,2},{2,-1},{1,-2},{-2,-1},{-1,-2}
+      };
+      for (auto& move: moves) {
+        int row = i + move[0];
+        int col = j + move[1];
+        if(row >= 0 && row < 8 && col >= 0 && col < 8) {
+          if (board[row][col] == 0 || enemy(row, col)) possibleMovements[row][col] = 1;
+        }
+      }
+      break;
+    }
 
+    //Bishop
+    case 4: case -4: {
+      for (int x = 1; i + x < 8 && j + x < 8; x++) {
+        if (board[i + x][j + x] == 0) possibleMovements[i + x][j + x] = 1;
+        else {
+          if (enemy(i + x, j + x)) possibleMovements[i + x][j + x] = 1;
+          break;
+        }
+      }
+      for (int x = 1; i + x < 8 && j - x >= 0; x++) {
+        if (board[i + x][j - x] == 0) possibleMovements[i + x][j - x] = 1;
+        else {
+          if (enemy(i + x, j - x)) possibleMovements[i + x][j - x] = 1;
+          break;
+        }
+      }
+      for (int x = 1; i - x >= 0 && j + x < 8; x++) {
+        if (board[i - x][j + x] == 0) possibleMovements[i - x][j + x] = 1;
+        else {
+          if (enemy(i - x, j + x)) possibleMovements[i - x][j + x] = 1;
+          break;
+        }
+      }
+      for (int x = 1; i - x >= 0 && j - x >= 0; x++) {
+        if (board[i - x][j - x] == 0) possibleMovements[i - x][j - x] = 1;
+        else {
+          if (enemy(i - x, j - x)) possibleMovements[i - x][j - x] = 1;
+          break;
+        }
+      }
+      break;
+    }
+
+    //King
+    case 5: case -5: {
+      int moves[8][2] = {
+        {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}, {0, -1}, {1, -1}
+      };
+      for (auto &move : moves) {
+        int row = i + move[0], col = j + move[1];
+        if (row >= 0 && row < 8 && col >= 0 && col < 8) {
+          if (board[row][col] == 0 || enemy(row, col)) possibleMovements[row][col] = 1;
+        }
+      }
+      break;
+    }
+
+    //Queen (Rook + Bishop)
+    case 6: case -6: {
+      for (int x = i + 1; x < 8; x++) {
+        if (board[x][j] == 0) possibleMovements[x][j] = 1;
+        else {
+          if (enemy(x, j)) possibleMovements[x][j] = 1;
+          break;
+        }
+      }
+      for (int x = i - 1; x >= 0; x--) {
+        if (board[x][j] == 0) possibleMovements[x][j] = 1;
+        else {
+          if (enemy(x, j)) possibleMovements[x][j] = 1;
+          break;
+        }
+      }
+      for (int y = j + 1; y < 8; y++) {
+        if (board[i][y] == 0) possibleMovements[i][y] = 1;
+        else {
+          if (enemy(i, y)) possibleMovements[i][y] = 1;
+          break;
+        }
+      }
+      for (int y = j - 1; y >= 0; y--) {
+        if (board[i][y] == 0) possibleMovements[i][y]=1;
+        else {
+          if (enemy(i, y)) possibleMovements[i][y]=1;
+          break;
+        }
+      }
+      for (int x = 1; i + x < 8 && j + x < 8; x++) {
+        if (board[i + x][j + x] == 0) possibleMovements[i + x][j + x] = 1;
+        else {
+          if (enemy(i + x, j + x)) possibleMovements[i + x][j + x] = 1;
+          break;
+        }
+      }
+      for (int x = 1; i + x < 8 && j - x >= 0; x++) {
+        if (board[i + x][j - x] == 0) possibleMovements[i + x][j - x] = 1;
+        else {
+          if (enemy(i + x, j - x)) possibleMovements[i + x][j - x] = 1;
+          break;
+        }
+      }
+      for (int x = 1; i - x >= 0 && j + x < 8; x++) {
+        if (board[i - x][j + x] == 0) possibleMovements[i - x][j + x] = 1;
+        else {
+          if (enemy(i - x, j + x)) possibleMovements[i - x][j + x] = 1;
+          break;
+        }
+      }
+      for (int x = 1; i - x >= 0 && j - x >= 0; x++) {
+        if (board[i - x][j - x] == 0) possibleMovements[i - x][j - x] = 1;
+        else {
+          if (enemy(i - x, j - x)) possibleMovements[i - x][j - x] = 1;
+          break;
+        }
+      }
+      break;
+    }
   }
 }
 

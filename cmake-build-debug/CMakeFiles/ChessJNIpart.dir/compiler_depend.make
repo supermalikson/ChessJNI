@@ -164,6 +164,7 @@ CMakeFiles/ChessJNIpart.dir/library.cpp.obj: C:/Users/cheki/CLionProjects/ChessJ
   C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/x86_64-w64-mingw32/include/wchar.h \
   C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/x86_64-w64-mingw32/include/wctype.h \
   C:/Users/cheki/CLionProjects/ChessJNIpart/Board.h \
+  C:/Users/cheki/CLionProjects/ChessJNIpart/Turn.h \
   C:/Users/cheki/CLionProjects/ChessJNIpart/library.h
 
 
@@ -284,6 +285,8 @@ C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/1
 C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/max_size_type.h:
 
 C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/ostream_insert.h:
+
+C:/Users/cheki/CLionProjects/ChessJNIpart/Turn.h:
 
 C:/Program\ Files/JetBrains/CLion\ 2024.1/bin/mingw/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/move.h:
 
