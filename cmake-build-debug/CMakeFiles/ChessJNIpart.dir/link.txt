@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2024.1\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\ChessJNIpart.dir/objects.a
+C:\PROGRA~1\JETBRA~1\CLION2~1.1\bin\mingw\bin\ar.exe qc CMakeFiles\ChessJNIpart.dir/objects.a @CMakeFiles\ChessJNIpart.dir\objects1.rsp
+C:\PROGRA~1\JETBRA~1\CLION2~1.1\bin\mingw\bin\G__~1.EXE -g -shared -o libChessJNIpart.dll -Wl,--out-implib,libChessJNIpart.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\ChessJNIpart.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\ChessJNIpart.dir\linkLibs.rsp

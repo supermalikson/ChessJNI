@@ -1,0 +1,3 @@
+C:/Users/cheki/CLionProjects/ChessJNIpart/cmake-build-debug/CMakeFiles/ChessJNIpart.dir
+C:/Users/cheki/CLionProjects/ChessJNIpart/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/cheki/CLionProjects/ChessJNIpart/cmake-build-debug/CMakeFiles/rebuild_cache.dir
