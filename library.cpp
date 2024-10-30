@@ -9,6 +9,7 @@ static std::array<std::array<int, 8>, 8> possibleMovements;
 static int selectedRow = -1;
 static int selectedCol = -1;
 static int selectedFigure = 0;
+Turn currentTurn;
 
 JNIEXPORT void JNICALL Java_Board_setBoard
   (JNIEnv *evt, jobject job) {
@@ -24,6 +25,7 @@ JNIEXPORT void JNICALL Java_Board_setBoard
     for (auto& row : possibleMovements) {
         row.fill(0);
     }
+    currentTurn = WHITE;
 }
 
 JNIEXPORT jint JNICALL Java_Board_getFigure
@@ -94,8 +96,8 @@ JNIEXPORT void JNICALL Java_Board_myMousePressed
 
   if (board[i][j] == 0 || enemy(i, j)) {
     if (validMove(i, j)) {
-
       move(selectedRow, selectedCol, i, j);
+      changeTurn();
     }
     selectedRow = -1;
     selectedCol = -1;
@@ -103,11 +105,13 @@ JNIEXPORT void JNICALL Java_Board_myMousePressed
     cleanMovements(possibleMovements);
 
   } else {
+    if (currentTurn == WHITE && board[i][j] < 0 || currentTurn == BLACK && board[i][j] > 0) {
       cleanMovements(possibleMovements);
       selectedRow = i;
       selectedCol = j;
       selectedFigure = board[i][j];
       calculateMovements(i, j);
+    }
   }
 }
 
@@ -313,6 +317,11 @@ bool validMove(int row, int col) {
 void move(int oldRow, int oldCol, int row, int col) {
   board[row][col] = board[oldRow][oldCol];
   board[selectedRow][selectedCol] = 0;
+}
+
+void changeTurn() {
+  if (currentTurn == WHITE) currentTurn = BLACK;
+  else currentTurn = WHITE;
 }
 
 
