@@ -12,7 +12,11 @@ bool validMove(int row, int col);
 
 void move(int oldRow, int oldCol, int row, int col);
 
+void capture(int row, int col);
+
 bool enemy(int row, int col);
+
+void enPassantClear();
 
 void changeTurn();
 

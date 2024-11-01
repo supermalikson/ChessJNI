@@ -10,6 +10,9 @@ static int selectedRow = -1;
 static int selectedCol = -1;
 static int selectedFigure = 0;
 Turn currentTurn;
+static int enpassantR;
+static int enpassantC;
+Turn enpassan;
 
 JNIEXPORT void JNICALL Java_Board_setBoard
   (JNIEnv *evt, jobject job) {
@@ -26,6 +29,7 @@ JNIEXPORT void JNICALL Java_Board_setBoard
         row.fill(0);
     }
     currentTurn = WHITE;
+    enPassantClear();
 }
 
 JNIEXPORT jint JNICALL Java_Board_getFigure
@@ -96,8 +100,10 @@ JNIEXPORT void JNICALL Java_Board_myMousePressed
 
   if (board[i][j] == 0 || enemy(i, j)) {
     if (validMove(i, j)) {
+
       move(selectedRow, selectedCol, i, j);
       changeTurn();
+
     }
     selectedRow = -1;
     selectedCol = -1;
@@ -134,9 +140,11 @@ void calculateMovements(int i, int j) {
 
     //Black Pawn
     case 1: {
-      if (enemy(i+1, j-1)) possibleMovements[i+1][j-1] = 1;
-      if (enemy(i+1, j+1)) possibleMovements[i+1][j+1] = 1;
-      if (!enemy(i+1, j)) possibleMovements[i+1][j] = 1;
+      if (enemy(i+1, j-1) || i+1 == enpassantR && j-1 == enpassantC && enpassan == WHITE)
+        possibleMovements[i+1][j-1] = 1;
+      if (enemy(i+1, j+1) || i+1 == enpassantR && j+1 == enpassantC && enpassan == WHITE)
+        possibleMovements[i+1][j+1] = 1;
+      if (board[i+1][j] == 0) possibleMovements[i+1][j] = 1;
       if (i == 1 && board[i + 2][j] == 0 && board[i + 1][j] == 0) possibleMovements[i+2][j] = 1;
       break;
     }
@@ -144,8 +152,10 @@ void calculateMovements(int i, int j) {
     //White Pawn
     case -1: {
       if (i > 0) {
-        if (enemy(i - 1, j - 1)) possibleMovements[i - 1][j - 1] = 1;
-        if (enemy(i - 1, j + 1)) possibleMovements[i - 1][j + 1] = 1;
+        if (enemy(i - 1, j - 1) || i - 1 == enpassantR && j - 1 == enpassantC && enpassan == BLACK)
+          possibleMovements[i - 1][j - 1] = 1;
+        if (enemy(i - 1, j + 1) || i - 1 == enpassantR && j + 1 == enpassantC && enpassan == BLACK)
+          possibleMovements[i - 1][j + 1] = 1;
         if (board[i - 1][j] == 0) possibleMovements[i - 1][j] = 1;
         if (i == 6 && board[i - 2][j] == 0 && board[i - 1][j] == 0) possibleMovements[i - 2][j] = 1;
       }
@@ -314,10 +324,91 @@ bool validMove(int row, int col) {
   return possibleMovements[row][col] == 1;
 }
 
-void move(int oldRow, int oldCol, int row, int col) {
-  board[row][col] = board[oldRow][oldCol];
-  board[selectedRow][selectedCol] = 0;
+void capture(int row, int col) {
+   board[row][col] = 0;
 }
+
+
+void move(int oldRow, int oldCol, int row, int col) {
+
+  //Black Pawn
+  if (selectedFigure == 1) {
+
+    //Double jump
+    if (std::abs(row - selectedRow) == 2) {
+      enpassan = BLACK;
+      enpassantR = selectedRow+1;
+      enpassantC = col;
+    }
+
+    // Black pawn promotion
+    else if (row == 7) board[oldRow][oldCol] = 7;
+
+    // Black pawn en passant capture
+    else if (row == enpassantR && col == enpassantC) {
+      capture(row - 1, col);
+      enPassantClear();
+
+    //Missed opportunity
+    } else if (row != enpassantR && col != enpassantC) {
+      enPassantClear();
+    }
+
+  //White Pawn
+  } else if (selectedFigure == -1) {
+
+    //Double jump
+    if (std::abs(row - selectedRow) == 2) {
+      enpassan = WHITE;
+      enpassantR = selectedRow-1;
+      enpassantC = col;
+    }
+
+    // White pawn promotion
+    else if (row == 0) board[oldRow][oldCol] = 7;
+
+    // White pawn en passant capture
+    else if (row == enpassantR && col == enpassantC) {
+      capture(row + 1, col);
+      enPassantClear();
+    }
+
+    //Missed opportunity
+    else if (row != enpassantR && col != enpassantC) {
+      enPassantClear();
+    }
+
+  //En passant clearing
+
+  } else {
+    enPassantClear();
+  }
+
+  // Move the piece to the new position
+  board[row][col] = board[oldRow][oldCol];
+  capture(oldRow, oldCol);
+
+}
+
+JNIEXPORT void JNICALL Java_Board_sendPromotionChoice
+  (JNIEnv *env, jobject jobj, jint row, jint col, jint choice) {
+  int figure;
+  switch (choice) {
+    case 0: figure = (currentTurn == WHITE) ? 6:-6; break;
+    case 1: figure = (currentTurn == WHITE) ? 4:-4; break;
+    case 2: figure = (currentTurn == WHITE) ? 3:-3; break;
+    case 3: figure = (currentTurn == WHITE) ? 2:-2; break;
+    default: figure = (currentTurn == WHITE) ? 6:-6; break;
+  }
+
+  board[row][col] = figure;
+}
+
+void enPassantClear() {
+  enpassantR = -1;
+  enpassantC = -1;
+}
+
 
 void changeTurn() {
   if (currentTurn == WHITE) currentTurn = BLACK;

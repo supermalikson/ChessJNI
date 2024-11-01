@@ -111,6 +111,8 @@ extern "C" {
 #define Board_wKing -5L
 #undef Board_wQueen
 #define Board_wQueen -6L
+#undef Board_wPromotion
+#define Board_wPromotion -7L
 #undef Board_bPawn
 #define Board_bPawn 1L
 #undef Board_bRook
@@ -123,29 +125,15 @@ extern "C" {
 #define Board_bKing 5L
 #undef Board_bQueen
 #define Board_bQueen 6L
+#undef Board_bPromotion
+#define Board_bPromotion 7L
 /*
  * Class:     Board
- * Method:    setSelectedRow
- * Signature: (I)V
+ * Method:    setBoard
+ * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_Board_setSelectedRow
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     Board
- * Method:    setSelectedCol
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_Board_setSelectedCol
-  (JNIEnv *, jobject, jint);
-
-/*
- * Class:     Board
- * Method:    setSelectedFigure
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_Board_setSelectedFigure
-  (JNIEnv *, jobject, jint);
+JNIEXPORT void JNICALL Java_Board_setBoard
+  (JNIEnv *, jobject);
 
 /*
  * Class:     Board
@@ -165,59 +153,11 @@ JNIEXPORT jint JNICALL Java_Board_getSelectedCol
 
 /*
  * Class:     Board
- * Method:    getSelectedFigure
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_Board_getSelectedFigure
-  (JNIEnv *, jobject);
-
-/*
- * Class:     Board
- * Method:    setFigure
- * Signature: (III)V
- */
-JNIEXPORT void JNICALL Java_Board_setFigure
-  (JNIEnv *, jobject, jint, jint, jint);
-
-/*
- * Class:     Board
- * Method:    calculatePossibleMovements
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_Board_calculatePossibleMovements
-  (JNIEnv *, jobject, jint, jint);
-
-/*
- * Class:     Board
  * Method:    getPossibleTurns
  * Signature: (II)I
  */
 JNIEXPORT jint JNICALL Java_Board_getPossibleTurns
   (JNIEnv *, jobject, jint, jint);
-
-/*
- * Class:     Board
- * Method:    setPossibleTurnsToZero
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_Board_setPossibleTurnsToZero
-  (JNIEnv *, jobject);
-
-/*
- * Class:     Board
- * Method:    setBoard
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_Board_setBoard
-  (JNIEnv *, jobject);
-
-/*
- * Class:     Board
- * Method:    moveFigure
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_Board_moveFigure
-  (JNIEnv *, jobject, jint, jint, jint, jint);
 
 /*
  * Class:     Board
@@ -234,6 +174,14 @@ JNIEXPORT jint JNICALL Java_Board_getFigure
  */
 JNIEXPORT void JNICALL Java_Board_myMousePressed
   (JNIEnv *, jobject, jint, jint);
+
+/*
+ * Class:     Board
+ * Method:    sendPromotionChoice
+ * Signature: (III)V
+ */
+JNIEXPORT void JNICALL Java_Board_sendPromotionChoice
+  (JNIEnv *, jobject, jint, jint, jint);
 
 #ifdef __cplusplus
 }
