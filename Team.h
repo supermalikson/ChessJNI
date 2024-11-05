@@ -1,9 +1,10 @@
 #ifndef TURN_H
 #define TURN_H
 
-enum Turn {
+enum Team {
     WHITE,
-    BLACK
+    BLACK,
+    NEITHER
 };
 
 #endif //TURN_H

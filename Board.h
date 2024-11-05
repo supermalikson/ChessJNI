@@ -183,6 +183,30 @@ JNIEXPORT void JNICALL Java_Board_myMousePressed
 JNIEXPORT void JNICALL Java_Board_sendPromotionChoice
   (JNIEnv *, jobject, jint, jint, jint);
 
+/*
+ * Class:     Board
+ * Method:    getKingR
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_Board_getKingR
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     Board
+ * Method:    getKingC
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_Board_getKingC
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     Board
+ * Method:    getBoard
+ * Signature: ()[[I
+ */
+JNIEXPORT jobjectArray JNICALL Java_Board_getBoard
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif
